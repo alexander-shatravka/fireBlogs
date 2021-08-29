@@ -10,23 +10,170 @@
         </router-link>
       </div>
       <div class="nav-links">
-        <ul>
-          <router-links class="link" to="#">Home</router-links>
-          <router-links class="link" to="#">Blogs</router-links>
-          <router-links class="link" to="#">Create Post</router-links>
-          <router-links class="link" to="#">Login/Register</router-links>
+        <ul v-if="!isMobileView">
+          <router-link class="link" to="#">Home</router-link>
+          <router-link class="link" to="#">Blogs</router-link>
+          <router-link class="link" to="#">Create Post</router-link>
+          <router-link class="link" to="#">Login/Register</router-link>
         </ul>
       </div>
     </nav>
+    <menuIcon
+      v-if="isMobileView"
+      @click="toggleMobileNav"
+      class="menu-icon"
+    />
+    <transition name="mobile-nav">
+      <ul
+        v-if="isMobileNavShow"
+        class="mobile-nav"
+      >
+        <router-link class="link" to="#">Home</router-link>
+        <router-link class="link" to="#">Blogs</router-link>
+        <router-link class="link" to="#">Create Post</router-link>
+        <router-link class="link" to="#">Login/Register</router-link>
+      </ul>
+    </transition>
   </header>
 </template>
 
 <script>
+import menuIcon from "../assets/Icons/bars-regular.svg";
+
 export default {
-  name: "Navigation"
+  name: "navigation",
+  components: {
+    menuIcon,
+  },
+  data() {
+    return {
+      isMobileView: null,
+      isMobileNavShow: null,
+      windowWidth: null,
+    };
+  },
+  created() {
+    this.checkScreen()
+
+    window.addEventListener('resize', this.checkScreen)
+  },
+  methods: {
+    checkScreen() {
+      this.windowWidth = window.innerWidth;
+      if (this.windowWidth <= 750) {
+        this.isMobileView = true
+        return
+      }
+      this.isMobileView = false
+      this.isMobileNavShow = false
+      return
+    },
+
+    toggleMobileNav() {
+      this.isMobileNavShow = !this.isMobileNavShow
+    },
+  }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  header {
+    background-color: #fff;
+    padding: 0 25px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    z-index: 99;
+
+    .link {
+      font-weight: 500;
+      padding: 0 8px;
+      transition: .3s color ease;
+
+      &:hover {
+        color: #1eb8b8;
+      }
+    }
+  }
+
+  nav {
+    display: flex;
+    padding: 25px 0;
+
+    .branding {
+      display: flex;
+      align-items: center;
+
+      .header {
+        font-weight: 600;
+        font-size: 24px;
+        color: #000;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .nav-links {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-end;
+
+    ul {
+      margin-right: 32px;
+
+      .link {
+        margin-right: 32px;
+      }
+
+      .link:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .menu-icon {
+    cursor: pointer;
+    position: absolute;
+    top: 32px;
+    right: 25px;
+    height: 25px;
+    width: auto;
+  }
+
+  .mobile-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    max-width: 250px;
+    padding: 20px;
+    height: 100%;
+    background-color: #303030;
+
+    .link {
+      padding: 15px 0;
+      color: #fff;
+    }
+
+    &-enter-active,
+    &-leave-active {
+      transition: all 1s ease;
+    }
+
+    &-enter {
+      transform: translateX(-250px);
+    }
+
+    &-enter-to {
+      transform: translateX(0);
+    }
+
+    &-leave-to {
+      transform: translateX(-250px);
+    }
+  }
+
 
 </style>
